@@ -10,10 +10,9 @@ foreach (var line in lines) {
     games.Add(new Game(line));
 }
 
-var part1 = Part1(games);
-
 Console.WriteLine($"{new string('=', 10)} SOLUTIONS {new string('=', 10)}");
-Console.WriteLine($"Part 1: {part1}");
+Console.WriteLine($"Part 1: {Part1(games)}");
+Console.WriteLine($"Part 2: {Part2(games)}");
 
 return 0;
 
@@ -21,6 +20,12 @@ static int Part1(List<Game> games) {
     return games
         .Where(g => g.IsPossible(redLimit: 12, greenLimit: 13, blueLimit: 14))
         .Sum(g => g.GameId);
+}
+
+static int Part2(List<Game> games) {
+    return games
+        .Select(g => g.GetColorMinimums())
+        .Sum(c => c.red * c.green * c.blue);
 }
 
 class Game {
@@ -31,6 +36,14 @@ class Game {
 
         GameId = int.Parse(parts[0].Replace("game", "").Trim());
         Sets = parts[1].Split(';').Select(s => new Set(s));
+    }
+
+    public (int red, int green, int blue) GetColorMinimums() {
+        var red = Sets.Max(s => s.Red);
+        var green = Sets.Max(s => s.Green);
+        var blue = Sets.Max(s => s.Blue);
+
+        return (red, green, blue);
     }
 
     public bool IsPossible(int redLimit, int greenLimit, int blueLimit) {
