@@ -4,7 +4,7 @@ https://adventofcode.com/2023/day/1
 
 ## Input
 
-[input file](./days/01/input.txt)
+[input file](./input.txt)
 
 ## Part 1
 
