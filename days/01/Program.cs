@@ -63,8 +63,6 @@ static int Part2(IEnumerable<string> lines) {
         }
         lineNums.Sort((a, b) => a.index.CompareTo(b.index));
 
-        Console.WriteLine($"{line} => {string.Join(", ", lineNums.Select(n => n.digit))}");
-
         numbers.Add((lineNums.First().digit * 10) + lineNums.Last().digit);
     }
 
