@@ -99,8 +99,9 @@ func main() {
 		gearRatioTotals += gearPart[0].Value * gearPart[1].Value
 	}
 
-	fmt.Println("sum of part numbers:", sumOfPartNumbers)
-	fmt.Println("gear ratio totals:", gearRatioTotals)
+	fmt.Println("========== SOLUTIONS ==========")
+	fmt.Println("Part 1:", sumOfPartNumbers)
+	fmt.Println("Part 2:", gearRatioTotals)
 }
 
 func hasAdjacentSymbol(symbols []symbol, num number) (symbol, bool) {
