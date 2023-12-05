@@ -45,3 +45,17 @@ jobs:
       - name: run
         run: go run main.go
 
+  day_04:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./days/04
+    steps:
+      - uses: actions/checkout@v4
+      - name: setup go
+        uses: actions/setup-go@v4
+        with:
+            go-version: '1.21'
+      - name: run
+        run: go run main.go
+
