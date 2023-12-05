@@ -47,7 +47,7 @@ Take a seat in the large pile of colorful cards. How many points are they worth 
 
 ### Answer
 
-` `
+`21485`
 
 ## Part 2
 
