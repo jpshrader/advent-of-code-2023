@@ -72,3 +72,17 @@ jobs:
             go-version: '1.21'
       - name: run
         run: go run main.go
+
+  day_06:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./days/06
+    steps:
+      - uses: actions/checkout@v4
+      - name: setup dotnet
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8.0.x
+      - name: run
+        run: dotnet run
