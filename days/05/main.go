@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"slices"
 	"strconv"
 	"strings"
 )
@@ -15,12 +16,34 @@ func main() {
 		log.Fatal(err)
 	}
 
-	for key, value := range lookup {
-		fmt.Println(key, len(value))
-	}
-
 	fmt.Println("========== SOLUTIONS ==========")
-	fmt.Println("Part 1: ", len(seeds))
+	fmt.Println("Part 1: ", part1(lookup, seeds))
+}
+
+func part1(lookup mapLookup, seeds []int) int {
+	locations := []int{}
+	for _, seed := range seeds {
+		soil := findMapMatches(lookup, seedToSoilMapLineId, seed)
+		fertilizer := findMapMatches(lookup, soilToFertilizerMapLineId, soil)
+		water := findMapMatches(lookup, fertilizerToWaterMapLineId, fertilizer)
+		light := findMapMatches(lookup, waterToLightMapLineId, water)
+		temperature := findMapMatches(lookup, lightToTemperatureMapLineId, light)
+		humidity := findMapMatches(lookup, temperatureToHumidityMapLineId, temperature)
+		location := findMapMatches(lookup, humidityToLocationMapLineId, humidity)
+
+		locations = append(locations, location)
+	}
+	return slices.Min(locations)
+}
+
+func findMapMatches(lookup mapLookup, currentTargetId string, source int) int {
+	for _, mapItem := range lookup[currentTargetId] {
+		match := mapItem.FindMatch(source)
+		if match != -1 {
+			return match
+		}
+	}
+	return source
 }
 
 const (
@@ -36,9 +59,17 @@ const (
 )
 
 type mapItem struct {
-	Beginning int
-	Middle    int
-	End       int
+	DestinationRange int
+	SourceRangeStart int
+	RangeLength      int
+}
+
+func (mi mapItem) FindMatch(source int) int {
+	if source >= mi.SourceRangeStart && source < mi.SourceRangeStart+mi.RangeLength {
+		sourceOffset := source - mi.SourceRangeStart
+		return mi.DestinationRange + sourceOffset
+	}
+	return -1
 }
 
 type mapLookup map[string][]mapItem
@@ -91,13 +122,13 @@ func processLine(lookup mapLookup, currentTargetId string, line string) string {
 	}
 
 	splitLine := strings.Split(line, " ")
-	beginning, _ := strconv.Atoi(splitLine[0])
-	middle, _ := strconv.Atoi(splitLine[1])
-	end, _ := strconv.Atoi(splitLine[2])
+	destinationRange, _ := strconv.Atoi(splitLine[0])
+	sourceRangeStart, _ := strconv.Atoi(splitLine[1])
+	rangeLength, _ := strconv.Atoi(splitLine[2])
 	lookup[currentTargetId] = append(lookup[currentTargetId], mapItem{
-		Beginning: beginning,
-		Middle:    middle,
-		End:       end,
+		DestinationRange: destinationRange,
+		SourceRangeStart: sourceRangeStart,
+		RangeLength:      rangeLength,
 	})
 
 	return currentTargetId
