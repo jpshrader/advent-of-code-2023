@@ -4,10 +4,11 @@ import (
 	"bufio"
 	"fmt"
 	"log"
+	"math"
 	"os"
-	"slices"
 	"strconv"
 	"strings"
+	"sync"
 )
 
 func main() {
@@ -17,23 +18,42 @@ func main() {
 	}
 
 	fmt.Println("========== SOLUTIONS ==========")
-	fmt.Println("Part 1: ", part1(lookup, seeds))
+	fmt.Println("Part 1:", part1(lookup, seeds))
+	//fmt.Println("Part 2:", part2(lookup, seeds)) TODO: convert to reverse lookup to speed up
 }
 
 func part1(lookup mapLookup, seeds []int) int {
-	locations := []int{}
+	minLocation := math.MaxFloat64
 	for _, seed := range seeds {
-		soil := findMapMatches(lookup, seedToSoilMapLineId, seed)
-		fertilizer := findMapMatches(lookup, soilToFertilizerMapLineId, soil)
-		water := findMapMatches(lookup, fertilizerToWaterMapLineId, fertilizer)
-		light := findMapMatches(lookup, waterToLightMapLineId, water)
-		temperature := findMapMatches(lookup, lightToTemperatureMapLineId, light)
-		humidity := findMapMatches(lookup, temperatureToHumidityMapLineId, temperature)
-		location := findMapMatches(lookup, humidityToLocationMapLineId, humidity)
-
-		locations = append(locations, location)
+		minLocation = math.Min(minLocation, findSeedLocation(lookup, seed))
 	}
-	return slices.Min(locations)
+	return int(minLocation)
+}
+
+func part2(lookup mapLookup, seeds []int) int {
+	var wg sync.WaitGroup
+	minLocation := math.MaxFloat64
+	for i := 0; i < len(seeds); i += 2 {
+		for j := 0; j < seeds[i+1]; j++ {
+			wg.Add(1)
+			go func(i, j int, lookup mapLookup) {
+				defer wg.Done()
+				minLocation = math.Min(minLocation, findSeedLocation(lookup, seeds[i]+j))
+			}(i, j, lookup)
+		}
+	}
+	wg.Wait()
+	return int(minLocation)
+}
+
+func findSeedLocation(lookup mapLookup, seed int) float64 {
+	soil := findMapMatches(lookup, seedToSoilMapLineId, seed)
+	fertilizer := findMapMatches(lookup, soilToFertilizerMapLineId, soil)
+	water := findMapMatches(lookup, fertilizerToWaterMapLineId, fertilizer)
+	light := findMapMatches(lookup, waterToLightMapLineId, water)
+	temperature := findMapMatches(lookup, lightToTemperatureMapLineId, light)
+	humidity := findMapMatches(lookup, temperatureToHumidityMapLineId, temperature)
+	return float64(findMapMatches(lookup, humidityToLocationMapLineId, humidity))
 }
 
 func findMapMatches(lookup mapLookup, currentTargetId string, source int) int {
