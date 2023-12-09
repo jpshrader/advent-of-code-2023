@@ -9,3 +9,4 @@ https://adventofcode.com/
 - [Day 3](./days/03) - `golang`
 - [Day 4](./days/04) - `golang`
 - [Day 5](./days/05) - `golang`
+- [Day 6](./days/06) - `TBD`
