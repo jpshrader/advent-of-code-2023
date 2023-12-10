@@ -19,9 +19,9 @@ var races = times.Select((time, idx) => new Race {
     Distance = distances[idx]
 }).ToList();
 
-var winConditions = new List<int>();
+var winConditions = new List<double>();
 foreach (var race in races) {
-    winConditions.Add(race.GetWinConditions().Count());
+    winConditions.Add(race.GetWinConditions());
 }
 
 var marathonTime = double.Parse(races.Select(r => r.Time.ToString()).Aggregate((a, b) => a + b));
@@ -33,7 +33,7 @@ var marathonRace = new Race {
 };
 
 var part1 = winConditions.Aggregate((a, b) => a * b);
-var part2 = marathonRace.GetWinConditions().Count();
+var part2 = marathonRace.GetWinConditions();
 
 Console.WriteLine($"{new string('=', 10)} SOLUTIONS {new string('=', 10)}");
 Console.WriteLine($"Part 1: {part1}");
@@ -48,13 +48,34 @@ class Race {
 
     public required double Distance { get; set; }
 
-    public IEnumerable<int> GetWinConditions() {
-        for (var holdLength = 0; holdLength < Time; holdLength++) {
-            var movementPotential = (Time - holdLength) * holdLength;
+    public double GetWinConditions() {
+        var lowerBound = (double)0;
+        var upperBound = (double)Time;
 
-            if (movementPotential > Distance) {
-                yield return holdLength;
+        var lowerTask = Task.Run(() => {
+            for (var holdLength = 0; holdLength < Time; holdLength++) {
+                var movementPotential = (Time - holdLength) * holdLength;
+
+                if (movementPotential > Distance) {
+                    lowerBound = holdLength;
+                    break;
+                }
             }
-        }
+        });
+
+        var upperTask = Task.Run(() => {
+            for (var holdLength = Time; holdLength > 0; holdLength--) {
+                var movementPotential = (Time - holdLength) * holdLength;
+
+                if (movementPotential > Distance) {
+                    upperBound = holdLength;
+                    break;
+                }
+            }
+        });
+
+        Task.WaitAll(lowerTask, upperTask);
+
+        return upperBound - lowerBound + 1;
     }
 }
