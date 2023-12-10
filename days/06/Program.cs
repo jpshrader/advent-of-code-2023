@@ -14,22 +14,47 @@ var distances = lines[1]
     .Select(int.Parse).ToList();
 
 var races = times.Select((time, idx) => new Race {
+    Id = idx + 1,
     Time = time,
     Distance = distances[idx]
 }).ToList();
 
+var winConditions = new List<int>();
 foreach (var race in races) {
-    Console.WriteLine($"race: {race.Time} | {race.Distance}");
+    winConditions.Add(race.GetWinConditions().Count());
 }
+
+var marathonTime = double.Parse(races.Select(r => r.Time.ToString()).Aggregate((a, b) => a + b));
+var marathonDistance = double.Parse(races.Select(r => r.Distance.ToString()).Aggregate((a, b) => a + b));
+var marathonRace = new Race {
+    Id = 0,
+    Time = marathonTime,
+    Distance = marathonDistance
+};
+
+var part1 = winConditions.Aggregate((a, b) => a * b);
+var part2 = marathonRace.GetWinConditions().Count();
+
+Console.WriteLine($"{new string('=', 10)} SOLUTIONS {new string('=', 10)}");
+Console.WriteLine($"Part 1: {part1}");
+Console.WriteLine($"Part 2: {part2}");
 
 return 0;
 
 class Race {
-    public required int Time { get; set; }
+    public required int Id { get; set; }
 
-    public required int Distance { get; set; }
+    public required double Time { get; set; }
 
-    public static IEnumerable<int> GetWinConditions() {
-        return Enumerable.Empty<int>();
+    public required double Distance { get; set; }
+
+    public IEnumerable<int> GetWinConditions() {
+        for (var holdLength = 0; holdLength < Time; holdLength++) {
+            var movementPotential = (Time - holdLength) * holdLength;
+
+            if (movementPotential > Distance) {
+                yield return holdLength;
+            }
+        }
     }
 }
