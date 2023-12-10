@@ -10,3 +10,4 @@ https://adventofcode.com/
 - [Day 4](./days/04) - `golang`
 - [Day 5](./days/05) - `golang`
 - [Day 6](./days/06) - `dotnet`
+- [Day 7](./days/07) - `golang`
