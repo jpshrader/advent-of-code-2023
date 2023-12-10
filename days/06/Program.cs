@@ -62,7 +62,6 @@ class Race {
                 }
             }
         });
-
         var upperTask = Task.Run(() => {
             for (var holdLength = Time; holdLength > 0; holdLength--) {
                 var movementPotential = (Time - holdLength) * holdLength;
@@ -73,7 +72,6 @@ class Race {
                 }
             }
         });
-
         Task.WaitAll(lowerTask, upperTask);
 
         return upperBound - lowerBound + 1;
